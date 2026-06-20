@@ -1,4 +1,6 @@
-//it section is an array of objects that contains different resumes
+//PLease review index.d.ts file with index.ts for clear explanations between both, as both are linked
+//this section is an array of objects that contains different resumes
+
 export const resumes: Resume[] = [
     {
         id: "1",
@@ -64,6 +66,96 @@ export const resumes: Resume[] = [
         id: "3",
         companyName: "Apple",
         jobTitle: "iOS Developer",
+        imagePath: "/images/resume-3.png",
+        resumePath: "/resumes/resume-3.pdf",
+        feedback: {
+            overallScore: 75,
+            ATS: {
+                score: 90,
+                tips: [],
+            },
+            toneAndStyle: {
+                score: 90,
+                tips: [],
+            },
+            content: {
+                score: 90,
+                tips: [],
+            },
+            structure: {
+                score: 90,
+                tips: [],
+            },
+            skills: {
+                score: 90,
+                tips: [],
+            },
+        },
+    },
+    {
+        id: "4",
+        companyName: "Netflix",
+        jobTitle: "Backend Developer",
+        imagePath: "/images/resume-1.png",
+        resumePath: "/resumes/resume-1.pdf",
+        feedback: {
+            overallScore: 85,
+            ATS: {
+                score: 90,
+                tips: [],
+            },
+            toneAndStyle: {
+                score: 90,
+                tips: [],
+            },
+            content: {
+                score: 90,
+                tips: [],
+            },
+            structure: {
+                score: 90,
+                tips: [],
+            },
+            skills: {
+                score: 90,
+                tips: [],
+            },
+        },
+    },
+    {
+        id: "5",
+        companyName: "Amazon AWS",
+        jobTitle: "Cloud Engineer",
+        imagePath: "/images/resume-2.png",
+        resumePath: "/resumes/resume-2.pdf",
+        feedback: {
+            overallScore: 55,
+            ATS: {
+                score: 90,
+                tips: [],
+            },
+            toneAndStyle: {
+                score: 90,
+                tips: [],
+            },
+            content: {
+                score: 90,
+                tips: [],
+            },
+            structure: {
+                score: 90,
+                tips: [],
+            },
+            skills: {
+                score: 90,
+                tips: [],
+            },
+        },
+    },
+    {
+        id: "6",
+        companyName: "Samsung",
+        jobTitle: "Android Developer",
         imagePath: "/images/resume-3.png",
         resumePath: "/resumes/resume-3.pdf",
         feedback: {
