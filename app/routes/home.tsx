@@ -2,6 +2,9 @@ import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import {resumes} from "~/constants";
 import ResumeCards from "~/components/ResumeCards";
+import {usePuterStore} from "~/lib/puter";
+import {useLocation, useNavigate} from "react-router";
+import {useEffect} from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,9 +14,22 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+
+  //it is a custom hook created in puter.js, so we can simply import and use it
+  const {isLoading, auth} = usePuterStore();
+  const navigate = useNavigate()
+
+  //useEffect is a react hook that runs after the component has been rendered and dependencies is changed.
+  //when a user tries to access a secure route but they are not authenticated, then user is re-directed to auth again,that means they are blocked at auth. But if the user is authenticated then it will directed/navigated to the next page where they want to be directed
+  useEffect( () =>{
+    if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/')
+  }, [isLoading, auth.isAuthenticated, navigate])
+
+
   return <main className="bg-[url('/images/bg-main.svg')]">
     {/*NAVIGATION BAR*/}
     <Navbar />
+      
 
     {/*MAIN-DESCRIPTION*/}
     <section className="main-section">

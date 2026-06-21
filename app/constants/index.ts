@@ -184,6 +184,7 @@ export const resumes: Resume[] = [
     },
 ];
 
+
 //this section is a string explanation/prompt of how later on AI should return the data to us
 export const AIResponseFormat = `
       interface Feedback {
