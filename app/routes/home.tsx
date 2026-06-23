@@ -26,7 +26,7 @@ export default function Home() {
   }, [isLoading, auth.isAuthenticated, navigate])
 
 
-  return <main className="bg-[url('/images/bg-main.svg')]">
+  return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
     {/*NAVIGATION BAR*/}
     <Navbar />
       
