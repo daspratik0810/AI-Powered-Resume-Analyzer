@@ -67,12 +67,7 @@ const Upload = () => {
              data.feedback = JSON.parse(jsonMatch[0]);
              await kv.set(`resume:${uuid}`, JSON.stringify(data));
              setProcessingStatus("Feedback generated");
-             console.log(data);
-
-             // Wait a bit to show the success status before navigating back
-             setTimeout(() => {
-                 navigate("/");
-             }, 2000);
+             navigate(`/resume/${uuid}`)
          } catch (parseError) {
              console.error("JSON parsing error:", parseError);
              throw new Error("Error parsing feedback from AI. Please try again.");

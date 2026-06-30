@@ -1,9 +1,15 @@
+import {type ClassValue, clsx} from "clsx";
+import {twMerge} from "tailwind-merge";
+
 /**
  * Formats a size in bytes into a human-readable string.
  *
  * @param bytes The size in bytes.
  * @returns A formatted string (e.g., "1.5 MB").
  */
+export function cn (...inputs: ClassValue[]){
+  return twMerge(clsx(inputs))
+}
 export const formatSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
 
