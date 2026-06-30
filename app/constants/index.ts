@@ -188,58 +188,53 @@ export const resumes: Resume[] = [
 //this section is a string explanation/prompt of how later on AI should return the data to us
 export const AIResponseFormat = `
       interface Feedback {
-      overallScore: number; //max 100
+      overallScore: number;
       ATS: {
-        score: number; //rate based on ATS suitability
+        score: number;
         tips: {
           type: "good" | "improve";
-          tip: string; //give 3-4 tips
+          tip: string;
         }[];
       };
       toneAndStyle: {
-        score: number; //max 100
+        score: number;
         tips: {
           type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
+          tip: string;
+          explanation: string;
+        }[];
       };
       content: {
-        score: number; //max 100
+        score: number;
         tips: {
           type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
+          tip: string;
+          explanation: string;
+        }[];
       };
       structure: {
-        score: number; //max 100
+        score: number;
         tips: {
           type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
+          tip: string;
+          explanation: string;
+        }[];
       };
       skills: {
-        score: number; //max 100
+        score: number;
         tips: {
           type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
+          tip: string;
+          explanation: string;
+        }[];
       };
     }`;
 
-export const prepareInstructions = ({
-                                        jobTitle,
-                                        jobDescription,
-                                        AIResponseFormat,
-                                    }: {
-    jobTitle: string;
-    jobDescription: string;
-    AIResponseFormat: string;
-}) =>
-    `You are an expert in ATS (Applicant Tracking System) and resume analysis.
+export const prepareInstructions = (
+    jobTitle: string,
+    jobDescription: string
+): string => {
+    return `You are an expert in ATS (Applicant Tracking System) and resume analysis.
   Please analyze and rate this resume and suggest how to improve it.
   The rating can be low if the resume is bad.
   Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
@@ -251,3 +246,4 @@ export const prepareInstructions = ({
   Provide the feedback using the following format: ${AIResponseFormat}
   Return the analysis as a JSON object, without any other text and without the backticks.
   Do not include any other text or comments.`;
+};
