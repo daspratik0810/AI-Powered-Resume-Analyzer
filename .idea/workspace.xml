@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a7db755-877a-45c6-a640-3581ced5ce2b" name="Changes" comment="">
+    <list default="true" id="1a7db755-877a-45c6-a640-3581ced5ce2b" name="Changes" comment="pdf image conversion and AI feedback">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.output.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/constants/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/constants/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/lib/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lib/puter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/lib/puter.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/routes/upload.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/upload.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,61 +31,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="5.444145814038755E-18" />
-      <entry key="MS500" value="3.5461768046716574E-4" />
-      <entry key="S2" value="0.1775491636623919" />
-      <entry key="S5" value="0.8586496550961794" />
-      <entry key="S10" value="1.7142167645363462" />
-      <entry key="S30" value="2.9580488005843013" />
-      <entry key="S60" value="3.431339909240229" />
-      <entry key="M2" value="3.702528470879802" />
-      <entry key="M5" value="4.192621531152398" />
-      <entry key="M10" value="11.328883670409807" />
-      <entry key="M15" value="25.495071822398646" />
-      <entry key="M30" value="69.00664278728318" />
-      <entry key="H1" value="141.41941275193622" />
-      <entry key="H2" value="320.153062781901" />
-      <entry key="H4" value="714.0649403264281" />
-      <entry key="D1" value="1883.1134131276774" />
-      <entry key="W1" value="2284.55257741209" />
+      <entry key="MS100" value="1.9842785087883357" />
+      <entry key="MS500" value="4.676244077902631" />
+      <entry key="S2" value="10.62703988140301" />
+      <entry key="S5" value="15.658532382801528" />
+      <entry key="S10" value="18.393904705773224" />
+      <entry key="S30" value="21.16791944899966" />
+      <entry key="S60" value="26.933084228581198" />
+      <entry key="M2" value="43.90930912231011" />
+      <entry key="M5" value="91.3504321166054" />
+      <entry key="M10" value="139.41651309450106" />
+      <entry key="M15" value="168.8590472117412" />
+      <entry key="M30" value="225.3044193526819" />
+      <entry key="H1" value="307.498867927103" />
+      <entry key="H2" value="478.0642075166783" />
+      <entry key="H4" value="858.0467976025343" />
+      <entry key="D1" value="2115.9616832928104" />
+      <entry key="W1" value="2577.7583059837175" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0000000025444482" />
-      <entry key="MS500" value="1.0191037543389385" />
-      <entry key="S2" value="1.371774571030663" />
-      <entry key="S5" value="1.673150034638391" />
-      <entry key="S10" value="1.8204572107297194" />
-      <entry key="S30" value="1.9361640912705331" />
-      <entry key="S60" value="1.9675557303176574" />
-      <entry key="M2" value="1.9836441726788752" />
-      <entry key="M5" value="1.997476000569843" />
-      <entry key="M10" value="2.163282469125592" />
-      <entry key="M15" value="2.5765067718408994" />
-      <entry key="M30" value="4.125218916782525" />
-      <entry key="H1" value="7.545865556183937" />
-      <entry key="H2" value="17.56523744233585" />
-      <entry key="H4" value="39.32841416247578" />
-      <entry key="D1" value="99.49756259850348" />
-      <entry key="W1" value="119.27056932724368" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="9.74486236599784E-272" />
+      <entry key="S10" value="3.1216765291444582E-136" />
+      <entry key="S30" value="6.833884709976365E-46" />
+      <entry key="S60" value="2.9215078141902536E-23" />
+      <entry key="M2" value="7.621186760776912E-12" />
+      <entry key="M5" value="6.524470358579877E-5" />
+      <entry key="M10" value="0.014548138627049342" />
+      <entry key="M15" value="0.09802566133694302" />
+      <entry key="M30" value="0.8409594747974573" />
+      <entry key="H1" value="3.448367201997276" />
+      <entry key="H2" value="11.775374782142551" />
+      <entry key="H4" value="32.1069895128193" />
+      <entry key="D1" value="96.74778516378969" />
+      <entry key="W1" value="119.61894169342672" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="2.2937567458918115E-4" />
-      <entry key="MS500" value="0.1922217921637281" />
-      <entry key="S2" value="1.0132418091520787" />
-      <entry key="S5" value="2.1063699177441384" />
-      <entry key="S10" value="3.227886132554177" />
-      <entry key="S30" value="4.756108375325419" />
-      <entry key="S60" value="5.323837246871903" />
-      <entry key="M2" value="5.646992422379472" />
-      <entry key="M5" value="6.173959544837236" />
-      <entry key="M10" value="13.482978310972483" />
-      <entry key="M15" value="28.063582145402545" />
-      <entry key="M30" value="73.1240400031153" />
-      <entry key="H1" value="148.95563255455363" />
-      <entry key="H2" value="337.70406254057065" />
-      <entry key="H4" value="753.3767506625159" />
-      <entry key="D1" value="1982.6042084133617" />
-      <entry key="W1" value="2403.8219998828467" />
+      <entry key="MS100" value="1.8238471900849593" />
+      <entry key="MS500" value="4.589860209632086" />
+      <entry key="S2" value="10.583646425784604" />
+      <entry key="S5" value="15.634741776069042" />
+      <entry key="S10" value="18.3803108357094" />
+      <entry key="S30" value="21.162782935623373" />
+      <entry key="S60" value="26.92973205950279" />
+      <entry key="M2" value="43.90637969533704" />
+      <entry key="M5" value="91.34761250122855" />
+      <entry key="M10" value="139.42834084496255" />
+      <entry key="M15" value="168.95418081950567" />
+      <entry key="M30" value="226.14133946959197" />
+      <entry key="H1" value="310.94098986795007" />
+      <entry key="H2" value="489.82894380569076" />
+      <entry key="H4" value="890.1396173290789" />
+      <entry key="D1" value="2212.7027704325715" />
+      <entry key="W1" value="2697.3760801910503" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -144,16 +145,35 @@
       <workItem from="1781997624998" duration="5203000" />
       <workItem from="1782044974195" duration="5305000" />
       <workItem from="1782234122841" duration="13180000" />
-      <workItem from="1782822424850" duration="300000" />
+      <workItem from="1782822424850" duration="4823000" />
     </task>
+    <task id="LOCAL-00001" summary="pdf image conversion and AI feedback">
+      <option name="closed" value="true" />
+      <created>1782822933888</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1782822933888</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="5346a027-356e-48fb-91fe-054439c642ef" value="TOOL_WINDOW" />
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
+        <entry key="5346a027-356e-48fb-91fe-054439c642ef">
+          <value>
+            <State />
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
             <State>
@@ -174,6 +194,10 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="pdf image conversion and AI feedback" />
+    <option name="LAST_COMMIT_MESSAGE" value="pdf image conversion and AI feedback" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -184,7 +208,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/app/lib/puter.ts</url>
-          <line>447</line>
+          <line>448</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

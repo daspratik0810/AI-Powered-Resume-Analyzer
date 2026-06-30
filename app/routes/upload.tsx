@@ -20,52 +20,82 @@ const Upload = () => {
   }
 
   const handleAnalyze = async ({companyName, jobTitle, jobDescription, file} : {companyName: string, jobTitle: string, jobDescription: string, file: File}) => {
-     setIsProcessing(true)
-      setProcessingStatus("Uploading resume...")
-      const uploadedFile = await fs.upload([file])
+     try {
+         setIsProcessing(true)
+         setProcessingStatus("Uploading resume...")
+         const uploadedFile = await fs.upload([file])
 
-      if(!uploadedFile) return setProcessingStatus("Error uploading file")
+         if(!uploadedFile) throw new Error("Error uploading file")
 
-      setProcessingStatus("Analyzing resume and converting to image...")
-      const imageFile = await convertPdfToImage(file)
-      if(!imageFile.file) return setProcessingStatus("Error converting Resume pdf to image")
+         setProcessingStatus("Analyzing resume and converting to image...")
 
-      setProcessingStatus("Analyzing resume...")
+         const imageFile = await convertPdfToImage(file)
+         if(!imageFile.file) throw new Error("Error converting Resume pdf to image")
 
-      const uploadedImage = await fs.upload([imageFile.file])
-      if(!uploadedImage) return setProcessingStatus("Error uploading image")
+         setProcessingStatus("Analyzing resume...")
 
-      setProcessingStatus("Generating feedback...")
+         const uploadedImage = await fs.upload([imageFile.file])
+         if(!uploadedImage) throw new Error("Error uploading image")
 
-      const uuid = generateUUID()
-      const data = {
-          id : uuid,
-          resumePath : uploadedFile.path,
-          imagePath : uploadedImage.path,
-          companyName, jobTitle, jobDescription,
-          feedback : ""
-      }
-      await kv.set(`resume:${uuid}`, JSON.stringify(data))
-      setProcessingStatus("Generating feedback...")
+         setProcessingStatus("Generating feedback...")
 
-      const feedback = await ai.feedback(
-          uploadedFile.path,
-          prepareInstructions(jobTitle, jobDescription)
-      )
-      if(!feedback) return setProcessingStatus("Error generating feedback")
+         const uuid = generateUUID()
+         const data = {
+             id : uuid,
+             resumePath : uploadedFile.path,
+             imagePath : uploadedImage.path,
+             companyName, jobTitle, jobDescription,
+             feedback : ""
+         }
+         await kv.set(`resume:${uuid}`, JSON.stringify(data))
 
-      const feedbackText = typeof feedback.message.content === "string"
-          ? feedback.message.content
-          : feedback.message.content[0].text
+         const feedback = await ai.feedback(
+             uploadedFile.path,
+             prepareInstructions({jobTitle, jobDescription})
+         )
+         if(!feedback) throw new Error("Error generating feedback")
 
-        data.feedback = JSON.parse(feedbackText)
-        await kv.set(`resume:${uuid}`, JSON.stringify(data))
-        setProcessingStatus("Feedback generated")
-      console.log(data)
+         const feedbackText = typeof feedback.message.content === "string"
+             ? feedback.message.content
+             : (feedback.message.content[0] as any).text
 
+         try {
+             // Extract JSON from the response (handles cases where AI adds extra text or markdown)
+             const jsonMatch = feedbackText.match(/\{[\s\S]*\}/);
+             if (!jsonMatch) throw new Error("No JSON found in AI response");
+
+             data.feedback = JSON.parse(jsonMatch[0]);
+             await kv.set(`resume:${uuid}`, JSON.stringify(data));
+             setProcessingStatus("Feedback generated");
+             console.log(data);
+
+             // Wait a bit to show the success status before navigating back
+             setTimeout(() => {
+                 navigate("/");
+             }, 2000);
+         } catch (parseError) {
+             console.error("JSON parsing error:", parseError);
+             throw new Error("Error parsing feedback from AI. Please try again.");
+         }
+
+     } catch (error: any) {
+         console.error(error);
+         let errorMessage = "An error occurred during analysis";
+         if (error instanceof Error) {
+             errorMessage = error.message;
+         } else if (error && typeof error === 'object' && error.message) {
+             errorMessage = String(error.message);
+         } else if (typeof error === 'string') {
+             errorMessage = error;
+         }
+
+         setProcessingStatus(errorMessage);
+         setTimeout(() => {
+             setIsProcessing(false);
+         }, 4000);
+     }
   }
 
-  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -73,13 +103,10 @@ const Upload = () => {
       if(!form) return
       const formData = new FormData(form)
 
-      const companyName = formData.get("company-name")  as string
-      const jobTitle = formData.get("job-title")  as string
-      const jobDescription = formData.get("job-description")  as string
+      const companyName = formData.get("company-name")  as string;
+      const jobTitle = formData.get("job-title") as string;
+      const jobDescription = formData.get("job-description")  as string;
 
-      console.log({
-          companyName, jobTitle, jobDescription, file
-      })
       if(!file) return
 
       handleAnalyze({companyName, jobTitle, jobDescription, file })

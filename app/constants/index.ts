@@ -230,10 +230,7 @@ export const AIResponseFormat = `
       };
     }`;
 
-export const prepareInstructions = (
-    jobTitle: string,
-    jobDescription: string
-): string => {
+export const prepareInstructions = ({jobTitle, jobDescription,}: { jobTitle: string; jobDescription: string; }) => {
     return `You are an expert in ATS (Applicant Tracking System) and resume analysis.
   Please analyze and rate this resume and suggest how to improve it.
   The rating can be low if the resume is bad.
@@ -246,4 +243,4 @@ export const prepareInstructions = (
   Provide the feedback using the following format: ${AIResponseFormat}
   Return the analysis as a JSON object, without any other text and without the backticks.
   Do not include any other text or comments.`;
-};
+}

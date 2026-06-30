@@ -301,7 +301,8 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.upload(files);
+        const response = await puter.fs.upload(files);
+        return Array.isArray(response) ? response[0] : response;
     };
 
     const deleteFile = async (path: string) => {
@@ -353,7 +354,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                     ],
                 },
             ],
-            { model: "claude-sonnet-4" }
+            { model: "gpt-4o" }
         ) as Promise<AIResponse | undefined>;
     };
 
