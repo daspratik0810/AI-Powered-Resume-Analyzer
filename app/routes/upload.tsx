@@ -30,12 +30,17 @@ const Upload = () => {
          setProcessingStatus("Analyzing resume and converting to image...")
 
          const imageFile = await convertPdfToImage(file)
-         if(!imageFile.file) throw new Error("Error converting Resume pdf to image")
+         let uploadedImagePath = ""
 
-         setProcessingStatus("Analyzing resume...")
-
-         const uploadedImage = await fs.upload([imageFile.file])
-         if(!uploadedImage) throw new Error("Error uploading image")
+         if (imageFile.file) {
+             setProcessingStatus("Analyzing resume...")
+             const uploadedImage = await fs.upload([imageFile.file])
+             if(!uploadedImage) throw new Error("Error uploading image")
+             uploadedImagePath = uploadedImage.path
+         } else {
+             console.warn("PDF image conversion failed, continuing with PDF preview only.", imageFile.error)
+             setProcessingStatus("Resume uploaded. Continuing without image preview...")
+         }
 
          setProcessingStatus("Generating feedback...")
 
@@ -43,9 +48,9 @@ const Upload = () => {
          const data = {
              id : uuid,
              resumePath : uploadedFile.path,
-             imagePath : uploadedImage.path,
+             imagePath : uploadedImagePath,
              companyName, jobTitle, jobDescription,
-             feedback : ""
+             feedback : null
          }
          await kv.set(`resume:${uuid}`, JSON.stringify(data))
 
