@@ -8,6 +8,21 @@ let pdfjsLib: any = null;
 let isLoading = false;
 let loadPromise: Promise<any> | null = null;
 
+function validatePdfFile(file: File): string | null {
+    if (!file) return "No file was provided.";
+    if (file.size <= 0) return "The selected PDF is empty.";
+
+    const fileName = file.name?.toLowerCase() ?? "";
+    const isPdfMime = file.type === "application/pdf" || file.type.includes("pdf");
+    const isPdfExtension = fileName.endsWith(".pdf");
+
+    if (!isPdfMime && !isPdfExtension) {
+        return "Please upload a valid PDF file.";
+    }
+
+    return null;
+}
+
 async function loadPdfJs(): Promise<any> {
     if (pdfjsLib) return pdfjsLib;
     if (loadPromise) return loadPromise;
@@ -28,7 +43,24 @@ async function loadPdfJs(): Promise<any> {
 export async function convertPdfToImage(
     file: File
 ): Promise<PdfConversionResult> {
+    const validationError = validatePdfFile(file);
+    if (validationError) {
+        return {
+            imageUrl: "",
+            file: null,
+            error: validationError,
+        };
+    }
+
     try {
+        if (typeof window === "undefined" || typeof document === "undefined") {
+            return {
+                imageUrl: "",
+                file: null,
+                error: "PDF conversion requires a browser environment.",
+            };
+        }
+
         const lib = await loadPdfJs();
 
         const arrayBuffer = await file.arrayBuffer();
@@ -76,10 +108,11 @@ export async function convertPdfToImage(
             ); // Set quality to maximum (1.0)
         });
     } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         return {
             imageUrl: "",
             file: null,
-            error: `Failed to convert PDF: ${err}`,
+            error: `Failed to convert PDF to image: ${message}`,
         };
     }
 }
