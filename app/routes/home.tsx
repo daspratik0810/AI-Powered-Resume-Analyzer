@@ -46,6 +46,9 @@ export default function Home() {
         })
         .filter((resume): resume is Resume => resume !== null)
 
+      // Debug: show what was loaded from KV so we can diagnose missing previews
+      console.debug("Home: parsedResumes count=", parsedResumes.length, parsedResumes)
+
       setResumes(parsedResumes)
       setLoadingResumes(false)
     }
@@ -65,6 +68,7 @@ export default function Home() {
     <section className="main-section">
       <div className="page-heading py-16">
         <h1>Your Resume Has a Story. We Reveal It.</h1>
+        <DebugPanel />
         {!loadingResumes && resumes?.length === 0 ? (
           <h2>Upload your first resume to get started. CVorithm will analyze it and provide detailed feedback to help you improve.</h2>
         ): (
@@ -101,4 +105,35 @@ export default function Home() {
     </section>
 
   </main>
+}
+
+function DebugPanel() {
+  const [open, setOpen] = useState(false)
+  const { kv } = usePuterStore()
+  const [raw, setRaw] = useState<any>(null)
+
+  const toggle = async () => {
+    if (!open) {
+      try {
+        const items = (await kv.list('resume:*', true)) as any
+        setRaw(items)
+      } catch (e) {
+        setRaw({ error: String(e) })
+      }
+    }
+    setOpen(!open)
+  }
+
+  return (
+    <div className="w-full flex justify-end">
+      <button onClick={toggle} className="text-sm underline">
+        {open ? 'Hide debug' : 'Show debug'}
+      </button>
+      {open && (
+        <pre className="text-xs text-left mt-4 p-4 w-full overflow-auto bg-white/80 rounded max-h-60">
+          {JSON.stringify(raw || 'no data', null, 2)}
+        </pre>
+      )}
+    </div>
+  )
 }

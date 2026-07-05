@@ -55,8 +55,10 @@ const Upload = () => {
              uploadedImagePath = uploadedImage.path
              previewImage = await fileToDataUrl(imageFile.file)
          } else {
-             console.warn("PDF image conversion failed, continuing with PDF preview only.", imageFile.error)
+             console.warn("PDF image conversion failed, continuing without image preview.", imageFile.error)
              setProcessingStatus("Resume uploaded. Continuing without image preview...")
+             // Do not store a full PDF data URL in KV as it may exceed the value size limit.
+             previewImage = ""
          }
 
          setProcessingStatus("Generating feedback...")

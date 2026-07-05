@@ -23,11 +23,18 @@ const Resume = () => {
   }, [isLoading, auth.isAuthenticated, navigate, id])
 
   useEffect(() => {
+    const looksLikeLocalPath = (p?: string) => {
+      if (!p) return false
+      if (p.includes('\\') || /^[a-zA-Z]:/.test(p)) return true
+      if (p.startsWith('file://')) return true
+      return false
+    }
+
     const loadResume = async () => {
       setLoadingResume(true)
       const resume = await kv.get(`resume:${id}`)
 
-      if(!resume) {
+      if (!resume) {
         setLoadingResume(false)
         return
       }
@@ -35,16 +42,26 @@ const Resume = () => {
       try {
         const data = JSON.parse(resume)
 
-        const resumeBlob = await fs.read(data.resumePath)
-        if (resumeBlob) {
-          const pdfBlob = new Blob([resumeBlob], {type: "application/pdf"})
-          const resumeUrl = URL.createObjectURL(pdfBlob)
-          setResumeUrl(resumeUrl)
-        }
-
         if (data.previewImage) {
           setImageUrl(data.previewImage)
-        } else if (data.imagePath) {
+        }
+
+        if (data.resumePath && !looksLikeLocalPath(data.resumePath)) {
+          try {
+            const resumeBlob = await fs.read(data.resumePath)
+            if (resumeBlob) {
+              const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' })
+              const resumeUrl = URL.createObjectURL(pdfBlob)
+              setResumeUrl(resumeUrl)
+            }
+          } catch (readError) {
+            console.warn('Failed to load resume PDF for review page:', readError)
+          }
+        } else if (data.resumePath) {
+          console.debug('Skipping resumePath because it looks like a local file path:', data.resumePath)
+        }
+
+        if (!data.previewImage && data.imagePath && !looksLikeLocalPath(data.imagePath)) {
           try {
             const imageBlob = await fs.read(data.imagePath)
             if (imageBlob) {
@@ -52,15 +69,17 @@ const Resume = () => {
               setImageUrl(imageUrl)
             }
           } catch (error) {
-            console.warn("Failed to load resume image for review page:", error)
+            console.warn('Failed to load resume image for review page:', error)
           }
+        } else if (data.imagePath) {
+          console.debug('Skipping imagePath because it looks like a local file path or previewImage already exists:', data.imagePath)
         }
 
-        if (data.feedback && typeof data.feedback === "object") {
+        if (data.feedback && typeof data.feedback === 'object') {
           setFeedback(data.feedback)
         }
       } catch (error) {
-        console.error("Failed to load resume record:", error)
+        console.error('Failed to load resume record:', error)
       } finally {
         setLoadingResume(false)
       }
@@ -78,31 +97,21 @@ const Resume = () => {
       </nav>
       <div className="flex flex-row w-full max-lg:flex-col-reverse gap-8 px-6 pb-12">
           <section className=" mt-5 resume-preview-section lg:w-[45%] w-full bg-[url('/images/bg-small.svg')] bg-cover rounded-[32px] overflow-hidden p-6 flex flex-col items-center justify-start min-h-[calc(100vh-140px)] sticky top-6">
-            {resumeUrl ? (
+            {imageUrl || resumeUrl ? (
               <>
                 <div className="resume-preview-header w-full flex items-center justify-between gap-4 mb-4">
                   <div>
                     <h3 className="text-2xl font-semibold text-gray-900 mt-3">Resume Preview</h3>
-                    <p className="text-sm text-gray-500">Review the document and open it in a new tab.</p>
+                    <p className="text-sm text-gray-500">Review the document below.</p>
                   </div>
-                  <a
-                    href={resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50"
-                  >
-                    Open in new tab
-                  </a>
                 </div>
                 <div className="animate-in fade-in duration-1000 w-full flex-1 min-h-[82vh]">
                   {imageUrl ? (
-                    <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                       <img
                         src={imageUrl}
                         title="resume"
                         className="w-full h-full rounded-[28px] object-contain border border-gray-200 bg-white shadow-sm"
                       />
-                    </a>
                   ) : (
                     <div className="w-full h-full rounded-[28px] overflow-hidden border border-gray-200 bg-white shadow-sm">
                       <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
