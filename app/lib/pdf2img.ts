@@ -4,6 +4,9 @@ export interface PdfConversionResult {
     error?: string;
 }
 
+// @ts-expect-error - vite asset import for PDF worker URL
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
 let pdfjsLib: any = null;
 let isLoading = false;
 let loadPromise: Promise<any> | null = null;
@@ -30,8 +33,8 @@ async function loadPdfJs(): Promise<any> {
     isLoading = true;
     // @ts-expect-error - pdfjs-dist/build/pdf.mjs is not a module
     loadPromise = import("pdfjs-dist/build/pdf.mjs").then((lib) => {
-        // Set the worker source to use local file
-        lib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+        // Use the bundled worker URL from the installed pdfjs-dist package
+        lib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
         pdfjsLib = lib;
         isLoading = false;
         return lib;

@@ -1,139 +1,98 @@
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
-import ResumeCards from "~/components/ResumeCards";
+import ResumeCard from "~/components/ResumeCards";
 import {usePuterStore} from "~/lib/puter";
 import {Link, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "CVorithm | Turn Your CV Into Opportunities" },
-    { name: "description", content: "AI-driven resume analysis that helps you optimize your CV, improve ATS scores, and stand out to recruiters." },
+    { title: "Resumind" },
+    { name: "description", content: "Smart feedback for your dream job!" },
   ];
 }
 
 export default function Home() {
+  const { auth, kv } = usePuterStore();
+  const navigate = useNavigate();
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [loadingResumes, setLoadingResumes] = useState(false);
 
-  //it is a custom hook created in puter.js, so we can simply import and use it
-  const {isLoading, auth, fs, kv} = usePuterStore();
-  const navigate = useNavigate()
-  const [resumeUrl,setResumeUrl] = useState("")
-  const [resumes,setResumes] = useState<Resume[]>([])
-  const [loadingResumes,setLoadingResumes] = useState(false)
+  useEffect(() => {
+    if(!auth.isAuthenticated) navigate('/auth?next=/');
+  }, [auth.isAuthenticated])
 
-
-
-  //useEffect is a react hook that runs after the component has been rendered and dependencies is changed.
-  //when a user tries to access a secure route but they are not authenticated, then user is re-directed to auth again,that means they are blocked at auth. But if the user is authenticated then it will directed/navigated to the next page where they want to be directed
-  useEffect( () =>{
-    if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/')
-  }, [isLoading, auth.isAuthenticated, navigate])
-  
   useEffect(() => {
     const loadResumes = async () => {
-      setLoadingResumes(true)
-      const resumeItems = (await kv.list("resume:*", true)) as (KVItem | string)[] | undefined
-      const parsedResumes = (resumeItems || [])
-        .map((item) => {
-          const rawValue = typeof item === "string" ? item : item?.value
-          if (!rawValue) return null
-          try {
-            return JSON.parse(rawValue) as Resume
-          } catch (error) {
-            console.warn("Failed to parse resume item:", error, item)
-            return null
-          }
-        })
-        .filter((resume): resume is Resume => resume !== null)
+      setLoadingResumes(true);
 
-      // Debug: show what was loaded from KV so we can diagnose missing previews
-      console.debug("Home: parsedResumes count=", parsedResumes.length, parsedResumes)
-
-      setResumes(parsedResumes)
-      setLoadingResumes(false)
-    }
-
-    if (!isLoading && auth.isAuthenticated) {
-      loadResumes()
-    }
-  }, [isLoading, auth.isAuthenticated, kv])
-
-
-  return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
-    {/*NAVIGATION BAR*/}
-    <Navbar />
-      
-
-    {/*MAIN-DESCRIPTION*/}
-    <section className="main-section">
-      <div className="page-heading py-16">
-        <h1>Your Resume Has a Story. We Reveal It.</h1>
-        <DebugPanel />
-        {!loadingResumes && resumes?.length === 0 ? (
-          <h2>Upload your first resume to get started. CVorithm will analyze it and provide detailed feedback to help you improve.</h2>
-        ): (
-          <h2> Every resume has blind spots. Review your submissions and CVorithm finds them, explains them and helps you fix them before recruiters
-          ever notice.</h2>
-        )}
-      </div>
-    
-      {loadingResumes && (
-        <div className="flex flex-col items-center justify-center">
-          <img src="/images/resume-scan-2.gif" className="w-16 h-16 animate-spin"/>
-        </div>
-      )}
-
-      {!loadingResumes && resumes?.length === 0 && (
-        <div className="flex flex-col items-center justify-centermt-10 gap-4">
-          <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
-            Upload Resume
-          </Link>
-        </div>
-      )}
-      
-
-      {/*TEMPLETES*/}
-      {/* "resumes" from index.ts are an array of objects that contains different resumes*/}
-
-      {!loadingResumes && resumes.length > 0 && (
-          <div className="resumes-section">
-            {resumes.map((resume) => (
-              <ResumeCards key={resume.id} resume={resume} />
-            ))}
-          </div>
-      )}
-    </section>
-
-  </main>
-}
-
-function DebugPanel() {
-  const [open, setOpen] = useState(false)
-  const { kv } = usePuterStore()
-  const [raw, setRaw] = useState<any>(null)
-
-  const toggle = async () => {
-    if (!open) {
       try {
-        const items = (await kv.list('resume:*', true)) as any
-        setRaw(items)
-      } catch (e) {
-        setRaw({ error: String(e) })
+        const resumes = (await kv.list('resume:*', true)) as KVItem[];
+
+        const parsedResumes = resumes
+          .map((resume) => {
+            if (!resume?.value || typeof resume.value !== 'string') {
+              console.warn('Skipping invalid resume record', resume.key, resume.value);
+              return null;
+            }
+
+            try {
+              return JSON.parse(resume.value) as Resume;
+            } catch (error) {
+              console.warn('Skipping malformed resume JSON', resume.key, resume.value, error);
+              return null;
+            }
+          })
+          .filter((resume): resume is Resume => resume !== null);
+
+        console.log('here is parsedResumes', parsedResumes);
+        setResumes(parsedResumes);
+      } catch (error) {
+        console.error('Failed to load resumes from KV', error);
+        setResumes([]);
+      } finally {
+        setLoadingResumes(false);
       }
     }
-    setOpen(!open)
-  }
+
+    loadResumes();
+  }, [auth.isAuthenticated, kv]);
 
   return (
-    <div className="w-full flex justify-end">
-      <button onClick={toggle} className="text-sm underline">
-        {open ? 'Hide debug' : 'Show debug'}
-      </button>
-      {open && (
-        <pre className="text-xs text-left mt-4 p-4 w-full overflow-auto bg-white/80 rounded max-h-60">
-          {JSON.stringify(raw || 'no data', null, 2)}
-        </pre>
-      )}
-    </div>
-  )
+    <main className="bg-[url('/images/bg-main.svg')] bg-cover">
+      <Navbar />
+
+      <section className="main-section">
+        <div className="page-heading py-16">
+          <h1>Track Your Applications & Resume Ratings</h1>
+          {!loadingResumes && resumes?.length === 0 ? (
+            <h2>No resumes found. Upload your first resume to get feedback.</h2>
+          ) : (
+            <h2>Review your submissions and check AI-powered feedback.</h2>
+          )}
+        </div>
+        {loadingResumes && (
+          <div className="flex flex-col items-center justify-center">
+            <img src="/images/resume-scan-2.gif" className="w-[200px]" />
+          </div>
+        )}
+
+        {!loadingResumes && resumes.length > 0 && (
+          <div className="resumes-section">
+            {resumes.map((resume) => (
+              <ResumeCard key={resume.id} resume={resume} />
+            ))}
+          </div>
+        )}
+
+        {!loadingResumes && resumes?.length === 0 && (
+          <div className="flex flex-col items-center justify-center mt-10 gap-4">
+            <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
+              Upload Resume
+            </Link>
+          </div>
+        )}
+      </section>
+    </main>
+  );
 }

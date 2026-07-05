@@ -53,11 +53,11 @@ const Upload = () => {
              const uploadedImage = await fs.upload([imageFile.file])
              if(!uploadedImage) throw new Error("Error uploading image")
              uploadedImagePath = uploadedImage.path
-             previewImage = await fileToDataUrl(imageFile.file)
+             // We only store the uploaded image path in KV, not the full data URL.
+             previewImage = ""
          } else {
              console.warn("PDF image conversion failed, continuing without image preview.", imageFile.error)
              setProcessingStatus("Resume uploaded. Continuing without image preview...")
-             // Do not store a full PDF data URL in KV as it may exceed the value size limit.
              previewImage = ""
          }
 
