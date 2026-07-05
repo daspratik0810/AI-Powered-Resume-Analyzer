@@ -13,6 +13,7 @@ interface Resume {
     jobTitle?: string;
     imagePath: string;
     resumePath: string;
+    previewImage?: string;
     feedback: Feedback | null;
 }
 

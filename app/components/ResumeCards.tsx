@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import ScoreCircle from "~/components/ScoreCircle";
 import { usePuterStore } from '~/lib/puter';
 
-const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath, resumePath } }: { resume: Resume }) => {
+const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath, resumePath, previewImage } }: { resume: Resume }) => {
     const { fs } = usePuterStore();
     const [previewUrl, setPreviewUrl] = useState<string>("");
     const [isPdfPreview, setIsPdfPreview] = useState(false);
@@ -13,6 +13,12 @@ const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath,
         let url: string | null = null;
 
         const loadPreview = async () => {
+            if (previewImage) {
+                setPreviewUrl(previewImage);
+                setIsPdfPreview(false);
+                return;
+            }
+
             if (imagePath) {
                 try {
                     const blob = await fs.read(imagePath);
@@ -24,6 +30,12 @@ const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath,
                     }
                 } catch (error) {
                     console.warn("Failed to load resume image preview:", error);
+                }
+
+                if (active && (imagePath.startsWith("/") || imagePath.startsWith("http"))) {
+                    setPreviewUrl(imagePath);
+                    setIsPdfPreview(false);
+                    return;
                 }
             }
 
@@ -37,7 +49,24 @@ const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath,
                         return;
                     }
                 } catch (error) {
-                    console.warn("Failed to load resume PDF preview:", error);
+                    console.warn("Failed to load resume PDF preview from fs:", error);
+                }
+
+                if (active && (resumePath.startsWith("/") || resumePath.startsWith("http"))) {
+                    try {
+                        const response = await fetch(resumePath);
+                        if (response.ok) {
+                            const pdfBlob = await response.blob();
+                            if (active && pdfBlob) {
+                                url = URL.createObjectURL(pdfBlob);
+                                setPreviewUrl(url);
+                                setIsPdfPreview(true);
+                                return;
+                            }
+                        }
+                    } catch (fetchError) {
+                        console.warn("Failed to fetch resume preview from resumePath:", fetchError);
+                    }
                 }
             }
 
@@ -53,7 +82,7 @@ const ResumeCards = ({ resume: { id, companyName, jobTitle, feedback, imagePath,
                 URL.revokeObjectURL(url);
             }
         };
-    }, [fs, imagePath, resumePath]);
+    }, [fs, imagePath, previewImage]);
 
     const score = typeof feedback === "object" && feedback ? feedback.overallScore : 0;
 

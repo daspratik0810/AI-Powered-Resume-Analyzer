@@ -8,6 +8,21 @@ import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
 import {prepareInstructions} from "~/constants";
 
+const fileToDataUrl = async (file: File): Promise<string> => {
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to convert file to data URL"));
+      }
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+};
+
 const Upload = () => {
     const {auth, isLoading, fs, ai, kv} = usePuterStore()
     const navigate = useNavigate()
@@ -32,11 +47,13 @@ const Upload = () => {
          const imageFile = await convertPdfToImage(file)
          let uploadedImagePath = ""
 
+         let previewImage = ""
          if (imageFile.file) {
              setProcessingStatus("Analyzing resume...")
              const uploadedImage = await fs.upload([imageFile.file])
              if(!uploadedImage) throw new Error("Error uploading image")
              uploadedImagePath = uploadedImage.path
+             previewImage = await fileToDataUrl(imageFile.file)
          } else {
              console.warn("PDF image conversion failed, continuing with PDF preview only.", imageFile.error)
              setProcessingStatus("Resume uploaded. Continuing without image preview...")
@@ -49,6 +66,7 @@ const Upload = () => {
              id : uuid,
              resumePath : uploadedFile.path,
              imagePath : uploadedImagePath,
+             previewImage,
              companyName, jobTitle, jobDescription,
              feedback : null
          }
@@ -124,7 +142,7 @@ const Upload = () => {
             {isProcessing ? (
                 <>
                   <h2>{processingStatus}</h2>
-                  <img src="/images/resume-scan.gif" className="w-full" />
+                  <img src="/images/resume-scan.gif" className="w-full max-w-[480px] h-auto mx-auto mt-4 rounded-lg" />
                 </>
             ) : (
                 <h2>Upload your resume to get started</h2>

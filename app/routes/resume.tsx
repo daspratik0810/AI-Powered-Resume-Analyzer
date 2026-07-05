@@ -42,11 +42,17 @@ const Resume = () => {
           setResumeUrl(resumeUrl)
         }
 
-        if (data.imagePath) {
-          const imageBlob = await fs.read(data.imagePath)
-          if (imageBlob) {
-            const imageUrl = URL.createObjectURL(imageBlob)
-            setImageUrl(imageUrl)
+        if (data.previewImage) {
+          setImageUrl(data.previewImage)
+        } else if (data.imagePath) {
+          try {
+            const imageBlob = await fs.read(data.imagePath)
+            if (imageBlob) {
+              const imageUrl = URL.createObjectURL(imageBlob)
+              setImageUrl(imageUrl)
+            }
+          } catch (error) {
+            console.warn("Failed to load resume image for review page:", error)
           }
         }
 

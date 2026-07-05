@@ -29,22 +29,31 @@ export default function Home() {
     if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/')
   }, [isLoading, auth.isAuthenticated, navigate])
   
-  useEffect( () =>{
+  useEffect(() => {
     const loadResumes = async () => {
       setLoadingResumes(true)
-      const resumes = ( await kv.list("resume:*", true)) as KVItem[]
-      
-      const parsedResumes = resumes?.map( (resume) => (
-        JSON.parse(resume.value) as Resume
-      ))
+      const resumeItems = (await kv.list("resume:*", true)) as (KVItem | string)[] | undefined
+      const parsedResumes = (resumeItems || [])
+        .map((item) => {
+          const rawValue = typeof item === "string" ? item : item?.value
+          if (!rawValue) return null
+          try {
+            return JSON.parse(rawValue) as Resume
+          } catch (error) {
+            console.warn("Failed to parse resume item:", error, item)
+            return null
+          }
+        })
+        .filter((resume): resume is Resume => resume !== null)
 
-      console.log("parsedResumes", parsedResumes)
-      setResumes(parsedResumes || [])
+      setResumes(parsedResumes)
       setLoadingResumes(false)
     }
-  
-    loadResumes()
-  }, [])
+
+    if (!isLoading && auth.isAuthenticated) {
+      loadResumes()
+    }
+  }, [isLoading, auth.isAuthenticated, kv])
 
 
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
