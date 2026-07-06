@@ -154,7 +154,7 @@ const Upload = () => {
                   <img src="/images/resume-scan.gif" className="w-full max-w-[480px] h-auto mx-auto mt-4 rounded-lg" />
                 </>
             ) : (
-                <h2>Upload your resume to get started</h2>
+                <h2>Upload Your Resume. Land More Interviews.</h2>
             )}
 
             {!isProcessing && (
