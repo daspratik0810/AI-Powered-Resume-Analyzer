@@ -8,6 +8,13 @@ import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
 import {prepareInstructions} from "~/constants";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "CVorithm " },
+    { name: "description", content: "Smart feedback for your dream job!" },
+  ];
+}
+
 const fileToDataUrl = async (file: File): Promise<string> => {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader();
