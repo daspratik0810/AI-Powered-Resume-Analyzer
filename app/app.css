@@ -77,6 +77,9 @@ form {
   .logout-button {
     @apply rounded-full border border-indigo-400/40 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-indigo-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-slate-800 hover:shadow-lg hover:shadow-fuchsia-500/20;
   }
+  .page-footer {
+    @apply mt-16 w-full max-w-6xl rounded-[28px] border border-indigo-500/20 bg-gradient-to-br from-slate-800/90 to-slate-900/90 px-8 py-8 shadow-2xl shadow-black/20 backdrop-blur-xl;
+  }
   .main-section {
     @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-15 pb-5;
   }

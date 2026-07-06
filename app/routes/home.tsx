@@ -123,7 +123,40 @@ export default function Home() {
             </Link>
           </div>
         )}
+
+        <footer className="page-footer">
+          <div className="flex flex-col gap-4 text-center md:text-left">
+            <p className="text-xl font-semibold text-indigo-100">Concept by Pratik Das</p>
+            <p className="text-sm leading-7 text-indigo-300">
+              Reach out for collaborations, opportunities, or just to say hello.
+            </p>
+            <div className="flex flex-col flex-wrap items-center gap-3 text-sm text-indigo-200 md:flex-row md:justify-between">
+              <a
+                href="https://www.linkedin.com/in/pratikdas2000"
+                target="_blank"
+                rel="noreferrer"
+                className="transition hover:text-fuchsia-300"
+              >
+                LinkedIn: pratikdas2000
+              </a>
+              <a
+                href="https://github.com/daspratik0810"
+                target="_blank"
+                rel="noreferrer"
+                className="transition hover:text-fuchsia-300"
+              >
+                GitHub: daspratik0810
+              </a>
+              <span className="flex items-center gap-2">
+                <span>📞</span>
+                <span>+49 176 31579107</span>
+                <span className="text-lg">🇩🇪</span>
+              </span>
+            </div>
+          </div>
+        </footer>
       </section>
+      
     </main>
   );
 }
