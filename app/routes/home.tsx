@@ -13,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth, kv } = usePuterStore();
+  const { auth, kv, fs } = usePuterStore();
   const navigate = useNavigate();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loadingResumes, setLoadingResumes] = useState(false);
@@ -22,41 +22,67 @@ export default function Home() {
     if(!auth.isAuthenticated) navigate('/auth?next=/');
   }, [auth.isAuthenticated])
 
-  useEffect(() => {
-    const loadResumes = async () => {
-      setLoadingResumes(true);
+  const loadResumes = async () => {
+    setLoadingResumes(true);
 
-      try {
-        const resumes = (await kv.list('resume:*', true)) as KVItem[];
+    try {
+      const resumes = (await kv.list('resume:*', true)) as KVItem[];
 
-        const parsedResumes = resumes
-          .map((resume) => {
-            if (!resume?.value || typeof resume.value !== 'string') {
-              console.warn('Skipping invalid resume record', resume.key, resume.value);
-              return null;
-            }
+      const parsedResumes = resumes
+        .map((resume) => {
+          if (!resume?.value || typeof resume.value !== 'string' || resume.value.trim() === '') {
+            console.warn('Skipping invalid resume record', resume.key, resume.value);
+            return null;
+          }
 
-            try {
-              return JSON.parse(resume.value) as Resume;
-            } catch (error) {
-              console.warn('Skipping malformed resume JSON', resume.key, resume.value, error);
-              return null;
-            }
-          })
-          .filter((resume): resume is Resume => resume !== null);
+          try {
+            return JSON.parse(resume.value) as Resume;
+          } catch (error) {
+            console.warn('Skipping malformed resume JSON', resume.key, resume.value, error);
+            return null;
+          }
+        })
+        .filter((resume): resume is Resume => resume !== null);
 
-        console.log('here is parsedResumes', parsedResumes);
-        setResumes(parsedResumes);
-      } catch (error) {
-        console.error('Failed to load resumes from KV', error);
-        setResumes([]);
-      } finally {
-        setLoadingResumes(false);
-      }
+      console.log('here is parsedResumes', parsedResumes);
+      setResumes(parsedResumes);
+    } catch (error) {
+      console.error('Failed to load resumes from KV', error);
+      setResumes([]);
+    } finally {
+      setLoadingResumes(false);
     }
+  }
 
+  useEffect(() => {
     loadResumes();
   }, [auth.isAuthenticated, kv]);
+
+  const handleDeleteResume = async (id: string) => {
+    try {
+      const resumeToDelete = resumes.find(r => r.id === id);
+      
+      if (resumeToDelete) {
+        // Delete image file from file system
+        if (resumeToDelete.imagePath) {
+          try {
+            await fs.delete(resumeToDelete.imagePath);
+          } catch (error) {
+            console.error('Failed to delete image file:', error);
+          }
+        }
+        
+        // Delete resume from KV storage
+        await kv.delete(`resume:${id}`);
+        
+        // Reload resumes list
+        await loadResumes();
+      }
+    } catch (error) {
+      console.error('Failed to delete resume:', error);
+      alert('Failed to delete resume. Please try again.');
+    }
+  };
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
@@ -80,7 +106,7 @@ export default function Home() {
         {!loadingResumes && resumes.length > 0 && (
           <div className="resumes-section">
             {resumes.map((resume) => (
-              <ResumeCard key={resume.id} resume={resume} />
+              <ResumeCard key={resume.id} resume={resume} onDelete={handleDeleteResume} />
             ))}
           </div>
         )}

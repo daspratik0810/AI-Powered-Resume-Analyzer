@@ -391,7 +391,8 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.kv.delete(key);
+        // Puter KV doesn't have a delete method, so we use set with empty value
+        return puter.kv.set(key, "");
     };
 
     const listKV = async (pattern: string, returnValues?: boolean) => {
